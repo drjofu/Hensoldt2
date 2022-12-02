@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using WeitereBeispiele.Hubs;
 
 namespace WeitereBeispiele.Controllers
 {
@@ -7,6 +9,20 @@ namespace WeitereBeispiele.Controllers
   [ApiController]
   public class BeispielController : ControllerBase
   {
+    private readonly IHubContext<ChatHub> hubContext;
+
+    public BeispielController(IHubContext<ChatHub> hubContext)
+    {
+      this.hubContext = hubContext;
+    }
+
+    [HttpPost("chatmessage")]
+    public async Task SendMessage(string message)
+    {
+      await hubContext.Clients.All.SendAsync("ShowMessage", message);
+    }
+
+
     [HttpGet]
     public async Task<ActionResult<string>> Get()
     {

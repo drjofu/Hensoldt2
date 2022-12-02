@@ -1,0 +1,69 @@
+﻿@page "/world"
+@using global::Shared;
+
+<h3>World</h3>
+
+<table class="table table-striped ">
+  <tbody>
+    @foreach (var continent in continents)
+    {
+      <tr>
+        <td>@continent.Name</td>
+        <td>@continent.Area km²</td>
+        <td><button @onclick="()=>LoadCountries(continent.Id)" class="btn btn-success">Countries</button></td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+@if (countries is not null)
+{
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Car code</th>
+        <th>Area [km²]</th>
+        <th>Population</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var country in countries)
+      {
+        <tr>
+          <td>@country.Name</td>
+          <td>@country.CarCode</td>
+          <td>@country.Area</td>
+          <td>@country.Population</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+@code {
+  string baseUrl = "http://localhost:5292/";
+
+  [Inject]
+  public HttpClient HttpClient { get; set; }
+
+  private IEnumerable<Continent> continents;
+  private IEnumerable<Country> countries;
+
+  protected override async Task OnInitializedAsync()
+  {
+    try
+    {
+      continents = await HttpClient.GetFromJsonAsync<IEnumerable<Continent>>($"{baseUrl}continents");
+    }
+    catch (Exception ex)
+    {
+
+    }
+  }
+
+  private async Task LoadCountries(string continentId)
+  {
+    countries = await HttpClient
+    .GetFromJsonAsync<IEnumerable<Country>>($"{baseUrl}countries?continentid={continentId}");
+  }
+}

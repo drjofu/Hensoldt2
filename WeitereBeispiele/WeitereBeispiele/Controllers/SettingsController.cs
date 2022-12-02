@@ -20,6 +20,8 @@ namespace WeitereBeispiele.Controllers
       var pfad = configuration["pfad"];
       int anzahl = configuration.GetValue<int>("anzahl");
       string passwort = configuration.GetValue<string>("passwort");
+      Konfiguration konfiguration = new();
+      configuration.GetSection("konfiguration").Bind(konfiguration);
 
       return $"pfad: {pfad}, Anzahl: {anzahl}, Pw: {passwort}";
     }

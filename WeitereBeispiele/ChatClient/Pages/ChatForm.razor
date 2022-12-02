@@ -1,0 +1,52 @@
+﻿@page "/chat"
+@using Microsoft.AspNetCore.SignalR.Client;
+
+<h3>Chat Form</h3>
+
+<div>
+  <label>Meldung:</label>
+  <input @bind="meldung" />
+</div>
+<div>
+  <button @onclick="Abschicken">Senden</button>
+</div>
+<div>
+  <ul>
+    @foreach (var m in meldungen)
+    {
+      <li>@m</li>
+    }
+  </ul>
+</div>
+
+@code {
+  private string meldung = "nix";
+  private List<string> meldungen = new();
+  private HubConnection hubConnection;
+
+  [Inject]
+  public HttpClient HttpClient { get; set; }
+
+  string url = "http://localhost:5047/chat";
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender) return;
+
+    hubConnection = new HubConnectionBuilder()
+      .WithUrl(url)
+      .Build();
+    hubConnection.On<string>("ShowMessage", message =>
+    {
+      meldungen.Add(message);
+      this.StateHasChanged();
+
+    });
+    await hubConnection.StartAsync();
+  }
+
+  private async Task Abschicken()
+  {
+    await hubConnection.InvokeAsync("postMessage", meldung);
+  }
+}

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WeitereBeispiele;
+using WeitereBeispiele.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,10 @@ builder.Services.AddAuthorization(config =>
   config.AddPolicy("geldspeicherR", p => p.RequireClaim("geldspeicher", "r", "rw"));
 });
 
+builder.Services.AddSignalR();
+builder.Services.AddCors(b => b.AddPolicy("CORSPolicy", p =>
+  p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,11 +59,14 @@ else
   app.UseExceptionHandler("/error");
 }
 
+app.UseCors("CORSPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chat");
 
 app.Run();

@@ -26,5 +26,11 @@ namespace WeitereBeispiele.Controllers
     //  Task.Delay(2000).Wait();
     //  return "...";
     //}
+
+    [HttpGet("fehler")]
+    public void Fehler()
+    {
+      throw new ApplicationException("Hoppla - ein Fehler...");
+    }
   }
 }

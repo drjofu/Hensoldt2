@@ -40,7 +40,25 @@
     </tbody>
   </table>
 }
+
+@{
+  int i;
+  for (i = 0; i < 5; i++)
+  {
+    int k = i;
+    <div><button @onclick="()=>ButtonClick(k)">@i</button></div>
+  }
+}
+<h1>@zahl</h1>
+
 @code {
+  private int zahl;
+  private void ButtonClick(int zahl)
+  {
+    this.zahl = zahl;
+  }
+
+
   string baseUrl = "http://localhost:5292/";
 
   [Inject]
